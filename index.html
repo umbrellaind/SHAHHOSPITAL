@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shah Hospital - NABH 6th Edition Policy Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+  <!-- AUTH SCREEN (LOGIN / SIGNUP) -->
+  <div id="authSection" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+      <div class="bg-teal-700 p-6 text-white text-center">
+        <div class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+          <i class="fa-solid fa-hospital"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-wide">SHAH HOSPITAL</h1>
+        <p class="text-teal-100 text-xs mt-1">NABH 6th Edition Quality & Policy Portal</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-200">
+        <button id="tabLogin" onclick="switchAuthTab('login')" class="w-1/2 py-3 text-sm font-semibold text-teal-700 border-b-2 border-teal-700 bg-teal-50/40">Staff Login</button>
+        <button id="tabSignup" onclick="switchAuthTab('signup')" class="w-1/2 py-3 text-sm font-semibold text-slate-500 hover:text-teal-700">New Staff Signup</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Phone Number (User ID)</label>
+          <input type="tel" id="loginPhone" required placeholder="Enter 10-digit mobile number" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
+          <input type="password" id="loginPassword" required placeholder="Enter your password" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+        </div>
+        <button type="submit" id="loginBtn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-lg transition shadow-sm">
+          Login to Portal
+        </button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" onsubmit="handleSignup(event)" class="p-6 space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Full Name</label>
+          <input type="text" id="regName" required placeholder="e.g. Dr. Rahul Sharma / Sister Priya" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Phone Number (Will be User ID)</label>
+          <input type="tel" id="regPhone" required placeholder="Enter mobile number" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Department</label>
+          <select id="regDept" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm bg-white">
+            <option value="">-- Select Department --</option>
+            <option>Administration & Quality</option>
+            <option>Medical / Doctors</option>
+            <option>Nursing Services</option>
+            <option>ICU / Emergency / OT</option>
+            <option>Pharmacy</option>
+            <option>Laboratory & Radiology</option>
+            <option>Medical Records (MRD)</option>
+            <option>Front Office / Billing</option>
+            <option>HR & Training</option>
+            <option>Maintenance / Biomedical / Housekeeping</option>
+          </select>
+        </div>
+        <button type="submit" id="signupBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition shadow-sm">
+          Create ID & Password
+        </button>
+      </form>
+
+      <!-- Credentials Display Box after Signup -->
+      <div id="credBox" class="mx-6 mb-6 p-4 bg-amber-50 border border-amber-300 rounded-xl hidden">
+        <p class="text-xs font-bold text-amber-800 uppercase mb-1"><i class="fa-solid fa-key mr-1"></i> Save Your Login Credentials:</p>
+        <p class="text-sm text-slate-800">User ID (Phone): <strong id="showUserId" class="select-all"></strong></p>
+        <p class="text-sm text-slate-800">Password: <strong id="showUserPass" class="select-all text-teal-700"></strong></p>
+        <button onclick="proceedToPortal()" class="mt-3 w-full bg-teal-700 text-white text-xs font-semibold py-2 rounded-lg">Continue to Policies &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN POLICY PORTAL DASHBOARD -->
+  <div id="portalSection" class="hidden">
+    <!-- Top Navbar -->
+    <header class="bg-teal-800 text-white shadow-md sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-heart text-2xl text-teal-300"></i>
+          <div>
+            <h1 class="font-bold text-base sm:text-lg leading-tight">SHAH HOSPITAL — NABH POLICY PORTAL</h1>
+            <p class="text-xs text-teal-200">6th Edition Standards & SOP Repository</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right hidden sm:block">
+            <p id="navUserName" class="text-sm font-semibold"></p>
+            <p id="navUserDept" class="text-xs text-teal-200"></p>
+          </div>
+          <button onclick="logout()" class="bg-teal-900 hover:bg-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+            <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search & Filter Bar -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-3">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
+          <input type="text" id="searchInput" onkeyup="filterPolicies()" placeholder="Search by Objective Element (e.g. AAC.1.a, COP.3), Policy Name, Doc No, or Department..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+        </div>
+        <select id="chapterFilter" onchange="filterPolicies()" class="px-4 py-2 rounded-lg border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
+          <option value="ALL">All NABH Chapters</option>
+          <option value="AAC">AAC (Access & Assessment)</option>
+          <option value="COP">COP (Care of Patients)</option>
+          <option value="PRE">PRE (Patient Rights)</option>
+          <option value="MOM">MOM (Medication Management)</option>
+          <option value="IPC">IPC (Infection Control)</option>
+          <option value="PSQ">PSQ (Quality & Safety)</option>
+          <option value="ROM">ROM (Management)</option>
+          <option value="FMS">FMS (Facility & Safety)</option>
+          <option value="HRM">HRM (Human Resource)</option>
+          <option value="IMS">IMS (Information Management)</option>
+        </select>
+        <div class="flex items-center px-3 py-2 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600">
+          Showing: <span id="policyCount" class="ml-1 text-teal-700 font-bold">0</span>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loader" class="text-center py-12">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-teal-700 mb-2"></i>
+        <p class="text-sm text-slate-500">Loading NABH Policies from Hospital Server...</p>
+      </div>
+
+      <!-- Policy Table -->
+      <div id="tableContainer" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto hidden">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 text-xs uppercase text-slate-600">
+              <th class="p-3.5">Chapter</th>
+              <th class="p-3.5">NABH Objective Elements</th>
+              <th class="p-3.5">Policy Name & Doc No.</th>
+              <th class="p-3.5">Department</th>
+              <th class="p-3.5 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="policyTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- CORRECTION MODAL -->
+  <div id="correctionModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-amber-600 mr-2"></i>Suggest Policy Correction</h3>
+        <button onclick="closeCorrectionModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+        <p class="text-xs text-slate-500">Selected Policy:</p>
+        <p id="corrPolicyDoc" class="text-xs font-bold text-teal-700"></p>
+        <p id="corrPolicyTitle" class="text-sm font-semibold text-slate-800 mt-0.5"></p>
+      </div>
+      <textarea id="corrText" rows="4" placeholder="यहाँ लिखें कि इस पॉलिसी में क्या बदलाव या सुधार (Correction) करना है..." class="w-full p-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"></textarea>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closeCorrectionModal()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button id="submitCorrBtn" onclick="submitCorrection()" class="px-5 py-2 text-sm bg-teal-700 hover:bg-teal-800 text-white font-semibold rounded-lg">Submit Correction</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxKx9e9SK8QkzpjKJnwhT7MVvtEHIDN_qyvXVJx_R_fb_B3Wjmw7riOKesomDqQZxsyfA/exec";
+
+    let currentUser = null;
+    let allPolicies = [];
+    let selectedPolicyForCorr = null;
+
+    window.onload = () => {
+      const saved = localStorage.getItem("shahHospitalUser");
+      if (saved) {
+        currentUser = JSON.parse(saved);
+        showPortal();
+      }
+    };
+
+    function switchAuthTab(tab) {
+      document.getElementById("credBox").classList.add("hidden");
+      if (tab === "login") {
+        document.getElementById("loginForm").classList.remove("hidden");
+        document.getElementById("signupForm").classList.add("hidden");
+        document.getElementById("tabLogin").className = "w-1/2 py-3 text-sm font-semibold text-teal-700 border-b-2 border-teal-700 bg-teal-50/40";
+        document.getElementById("tabSignup").className = "w-1/2 py-3 text-sm font-semibold text-slate-500 hover:text-teal-700";
+      } else {
+        document.getElementById("signupForm").classList.remove("hidden");
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("tabSignup").className = "w-1/2 py-3 text-sm font-semibold text-teal-700 border-b-2 border-teal-700 bg-teal-50/40";
+        document.getElementById("tabLogin").className = "w-1/2 py-3 text-sm font-semibold text-slate-500 hover:text-teal-700";
+      }
+    }
+
+    async function callApi(payload) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const btn = document.getElementById("signupBtn");
+      btn.disabled = true;
+      btn.innerText = "Creating Account...";
+
+      try {
+        const res = await callApi({
+          action: "signup",
+          name: document.getElementById("regName").value,
+          phone: document.getElementById("regPhone").value,
+          department: document.getElementById("regDept").value
+        });
+
+        if (res.status === "success") {
+          currentUser = res.user;
+          localStorage.setItem("shahHospitalUser", JSON.stringify(currentUser));
+          document.getElementById("showUserId").innerText = res.user.phone;
+          document.getElementById("showUserPass").innerText = res.user.password;
+          document.getElementById("credBox").classList.remove("hidden");
+        } else {
+          alert(res.message);
+        }
+      } catch (err) {
+        alert("Server connection error. Please try again.");
+      }
+
+      btn.disabled = false;
+      btn.innerText = "Create ID & Password";
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById("loginBtn");
+      btn.disabled = true;
+      btn.innerText = "Verifying...";
+
+      try {
+        const res = await callApi({
+          action: "login",
+          phone: document.getElementById("loginPhone").value,
+          password: document.getElementById("loginPassword").value
+        });
+
+        if (res.status === "success") {
+          currentUser = res.user;
+          localStorage.setItem("shahHospitalUser", JSON.stringify(currentUser));
+          showPortal();
+        } else {
+          alert(res.message);
+        }
+      } catch (err) {
+        alert("Server connection error. Please try again.");
+      }
+
+      btn.disabled = false;
+      btn.innerText = "Login to Portal";
+    }
+
+    function proceedToPortal() {
+      showPortal();
+    }
+
+    function logout() {
+      localStorage.removeItem("shahHospitalUser");
+      location.reload();
+    }
+
+    async function showPortal() {
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("portalSection").classList.remove("hidden");
+      document.getElementById("navUserName").innerText = currentUser.name;
+      document.getElementById("navUserDept").innerText = currentUser.department + " (" + currentUser.phone + ")";
+
+      try {
+        const res = await callApi({ action: "getPolicies" });
+        document.getElementById("loader").classList.add("hidden");
+
+        if (res.status === "success") {
+          allPolicies = res.policies;
+          document.getElementById("tableContainer").classList.remove("hidden");
+          renderPolicies(allPolicies);
+        }
+      } catch (err) {
+        document.getElementById("loader").innerHTML = `<p class="text-sm text-red-600">Failed to load policies. Please refresh the page.</p>`;
+      }
+    }
+
+    function renderPolicies(list) {
+      const tbody = document.getElementById("policyTableBody");
+      document.getElementById("policyCount").innerText = list.length;
+      tbody.innerHTML = "";
+
+      list.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="p-3.5 font-bold text-teal-700">${p.chapter}</td>
+          <td class="p-3.5 font-medium text-slate-700 max-w-xs">${p.elements}</td>
+          <td class="p-3.5">
+            <div class="font-semibold text-slate-800">${p.title}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${p.docNo}</div>
+          </td>
+          <td class="p-3.5 text-xs text-slate-600">${p.department}</td>
+          <td class="p-3.5 text-center whitespace-nowrap space-x-2">
+            ${p.pdfUrl ? `<a href="${p.pdfUrl}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg"><i class="fa-solid fa-file-pdf mr-1.5"></i>Open PDF</a>` : `<span class="text-xs text-slate-400">No PDF</span>`}
+            <button onclick='openCorrectionModal(${JSON.stringify(p).replace(/'/g, "&apos;")})' class="inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold rounded-lg">
+              <i class="fa-solid fa-pen mr-1"></i>Correction
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterPolicies() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const chap = document.getElementById("chapterFilter").value;
+
+      const filtered = allPolicies.filter(p => {
+        const matchChap = (chap === "ALL" || p.chapter.toUpperCase() === chap);
+        const matchQuery = !q || (
+          p.elements.toLowerCase().includes(q) ||
+          p.title.toLowerCase().includes(q) ||
+          p.docNo.toLowerCase().includes(q) ||
+          p.department.toLowerCase().includes(q)
+        );
+        return matchChap && matchQuery;
+      });
+      renderPolicies(filtered);
+    }
+
+    function openCorrectionModal(policy) {
+      selectedPolicyForCorr = policy;
+      document.getElementById("corrPolicyDoc").innerText = policy.docNo + " (" + policy.elements + ")";
+      document.getElementById("corrPolicyTitle").innerText = policy.title;
+      document.getElementById("corrText").value = "";
+      document.getElementById("correctionModal").classList.remove("hidden");
+      document.getElementById("correctionModal").classList.add("flex");
+    }
+
+    function closeCorrectionModal() {
+      document.getElementById("correctionModal").classList.add("hidden");
+      document.getElementById("correctionModal").classList.remove("flex");
+    }
+
+    async function submitCorrection() {
+      const text = document.getElementById("corrText").value.trim();
+      if (!text) return alert("कृपया सुधार का विवरण लिखें।");
+
+      const btn = document.getElementById("submitCorrBtn");
+      btn.disabled = true;
+      btn.innerText = "Submitting...";
+
+      try {
+        const res = await callApi({
+          action: "submitCorrection",
+          userName: currentUser.name,
+          userPhone: currentUser.phone,
+          userDept: currentUser.department,
+          docNo: selectedPolicyForCorr.docNo,
+          policyTitle: selectedPolicyForCorr.title,
+          correctionText: text
+        });
+
+        if (res.status === "success") {
+          alert(res.message);
+          closeCorrectionModal();
+        } else {
+          alert(res.message);
+        }
+      } catch (err) {
+        alert("Failed to submit correction. Please try again.");
+      }
+
+      btn.disabled = false;
+      btn.innerText = "Submit Correction";
+    }
+  </script>
+</body>
+</html>
